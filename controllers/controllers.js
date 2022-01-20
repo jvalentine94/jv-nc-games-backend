@@ -6,10 +6,19 @@ const {patchReviewById} = require('../models/games.models.js')
 
 const {getAllReviewsModel} = require('../models/games.models.js')
 
+const {getAllReviewCommentsModel} = require('../models/games.models.js')
+
+const {postCommentModel} = require('../models/games.models.js')
+
+const {deleteCommentModel} = require('../models/games.models.js')
+
 const {checkReviewId} = require('../db/utils/util-funcs')
 
 const {isCategory} = require('../db/utils/util-funcs')
 
+const {reqParamIsNumber} = require('../db/utils/util-funcs')
+
+const {checkCommentPostParams} = require('../db/utils/util-funcs')
 
 exports.getCategory = (req,res) => {
     return getCategories()
@@ -100,7 +109,52 @@ exports.getAllReviews = (req,res,next) => {
         res.status(200).send({reviews})
     })
     .catch((err)=>{
-        console.log("CONTROLLER ERROR",err)
         next(err)
     })
+}
+
+exports.getAllReviewComments = (req,res,next) => {
+
+    const {id} =req.params;
+    
+    reqParamIsNumber(id)
+    .then(()=>{
+        return getAllReviewCommentsModel(id)
+    })
+    .then((comments)=>{
+        res.status(200).send({comments})
+    })
+    .catch((err) => {
+        console.log("CONTROLLER error",err)
+        next(err)
+    })
+}
+
+exports.postComment = (req,res,next) => {
+
+    const reviewId = req.params['id'];
+    const{username,body}=req.query;
+    
+    checkCommentPostParams(req.query)
+    .then(()=>{
+        return postCommentModel(reviewId,username,body)
+    })
+    .then((comment)=>{
+        res.status(200).send({comment})
+    })
+    .catch((err) => {
+        console.log("CONTROLLER error",err)
+        next(err)
+    })
+}
+
+exports.deleteComment = (req,res,next) => {
+
+    const commentId = req.params['commentid']
+
+    deleteCommentModel(commentId)
+    .then((comment)=>{
+        res.status(200).send({comment})
+    })
+
 }
