@@ -30,5 +30,107 @@
         }
       ]
     }
+  },
+  "GET /api/reviews/:review_id": {
+    "description": "serves an object of the specified review_id and the data held within the review table",
+    "queries": [],
+    "exampleResponse": {
+      "review": [
+        {
+          "title": "One Night Ultimate Werewolf",
+          "designer": "Akihisa Okui",
+          "owner": "happyamy2016",
+          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "category": "hidden-roles",
+          "created_at": 1610964101251,
+          "votes": 5
+        }
+      ]
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "Increases review votes by the value held within the 'inc_votes' on the relevent review (by review_id) see below exampleResponse below for a served response based on inc_votes value of 2",
+    "queries": ["inc_votes"],
+    "exampleResponse": {
+      "review": [
+        {
+          "title": "One Night Ultimate Werewolf",
+          "designer": "Akihisa Okui",
+          "owner": "happyamy2016",
+          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "category": "hidden-roles",
+          "created_at": 1610964101251,
+          "votes": 7
+        }
+      ]
+    }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "Serves an array of comments and associated data",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          {
+            "body": "I loved this game too!",
+            "votes": 16,
+            "author": "bainesface",
+            "review_id": 2,
+            "created_at": 00.00.2021,
+          },  {
+            "body": "EPIC board game!",
+            "votes": 16,
+            "author": "bainesface",
+            "review_id": 2,
+            "created_at": 00.00.2021,
+          },
+          {
+            "body": "Now this is a story all about how, board games turned my life upside down",
+            "votes": 13,
+            "author": "mallionaire",
+            "review_id": 2,
+            "created_at": 00.00.2021,
+          }
+        }
+      ]
+    }
+  },
+  "POST /api/reviews/:review_id/comments": {
+    "description": "TBC",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "YO":"YO"
+        }
+      ]
+    }
   }
 }
+
+
+// #### **POST /api/reviews/:review_id/comments**
+
+// Request body accepts:
+
+// - an object with the following properties:
+//   - `username`
+//   - `body`
+
+// Responds with:
+
+// - the posted comment
+
+// ---
+
+// #### **DELETE /api/comments/:comment_id**
+
+// Should:
+
+// - delete the given comment by `comment_id`
+
+// Responds with:
+
+// - status 204 and no content
+
+// ---
