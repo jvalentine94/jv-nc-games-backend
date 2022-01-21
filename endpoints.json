@@ -89,48 +89,25 @@
             "votes": 13,
             "author": "mallionaire",
             "review_id": 2,
-            "created_at": 00.00.2021,
+            "created_at": 00.00.2021
           }
         }
       ]
     }
   },
   "POST /api/reviews/:review_id/comments": {
-    "description": "TBC",
+    "description": "Adds a new comment to the comment sql table corresponding the the review id in the query string, the query string also contains the body of the comment",
     "queries": [],
     "exampleResponse": {
       "comment": [
-        {
-          "YO":"YO"
-        }
+          {
+            "body": "Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite",
+            "votes": 10,
+            "author": "philippaclaire9",
+            "review_id": 3,
+            "created_at": 00.00.2021
+          }
       ]
     }
   }
 }
-
-
-// #### **POST /api/reviews/:review_id/comments**
-
-// Request body accepts:
-
-// - an object with the following properties:
-//   - `username`
-//   - `body`
-
-// Responds with:
-
-// - the posted comment
-
-// ---
-
-// #### **DELETE /api/comments/:comment_id**
-
-// Should:
-
-// - delete the given comment by `comment_id`
-
-// Responds with:
-
-// - status 204 and no content
-
-// ---
