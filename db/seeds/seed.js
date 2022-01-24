@@ -59,7 +59,7 @@ const seed = (data) => {
     return  db.query(sql)
   })
   .then(()=>{
-    const sql=format('INSERT INTO users (username, avatar_url, name) VALUES %L;',objectValues(userData))
+    const sql=format('INSERT INTO users (username, name, avatar_url) VALUES %L;',objectValues(userData))
     return  db.query(sql)
   })
   .then(()=>{

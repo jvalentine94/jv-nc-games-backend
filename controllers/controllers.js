@@ -12,7 +12,13 @@ const {postCommentModel} = require('../models/games.models.js')
 
 const {deleteCommentModel} = require('../models/games.models.js')
 
-const {checkReviewId} = require('../db/utils/util-funcs')
+const {getUsersModel} = require('../models/games.models.js')
+
+const {getUsernameModel} = require('../models/games.models.js')
+
+const {patchCommentModel} = require('../models/games.models.js')
+
+const {checkReviewId, queryValidation} = require('../db/utils/util-funcs')
 
 const {isCategory} = require('../db/utils/util-funcs')
 
@@ -27,6 +33,7 @@ exports.getCategory = (req,res) => {
     })
 }
 
+//REFACTORED, DISCUSS LIMITATION/IMPORVEMENTS WITH TUTOR
 exports.getReviewId = (req,res,next) => {
 
     const {id} = req.params;
@@ -35,40 +42,47 @@ exports.getReviewId = (req,res,next) => {
     .then((idExists) =>{
         
         if (idExists===true){
-            return getReviewById(id)
-            .then((review)=>{
-
-                res.status(200).send({review: review})
+            getReviewById(id)
+            .then((reviewData)=>{
+                console.log('CONTROLER CHECKPOINT',reviewData)
+                res.status(200).send({review: reviewData})
             })
-        } else if (idExists===false) {
-      
+            
+        }
+
+        else if (idExists===false) {
             return Promise.reject({status:404,msg:'Not Found'})
-        } else if (idExists===undefined){
+        }
+
+        else if(idExists===undefined){
             return Promise.reject({status:400,msg:'Bad Request'})
         }
     })
     .catch((err) => {
         next(err)
     })
-
 }
 
-//REFACTOR THIS
+//REFACTOR THIS, DISCUSS REFACTOR WITH TUTOR
 exports.patchReviewId = (req,res,next) => {
 
     const {id} = req.params;
-    
+    const reqQuery = req.query;
+    console.log(req.query)
 
-    for (let keys in req.query){
-        if (keys!=='inc_votes'){
-            return Promise.reject({status:400,msg:'Bad Request'})
-            .catch((err)=>{
-                next(err)
-            })
-        }
-    } 
+    // for (let keys in req.query){
+    //     if (keys!=='inc_votes'){
+    //         return Promise.reject({status:400,msg:'Bad Request'})
+    //         .catch((err)=>{
+    //             next(err)
+    //         })
+    //     }
+    // } 
 
-    return checkReviewId(id)
+    queryValidation(reqQuery,['inc_votes'])
+    .then(()=>{
+        return checkReviewId(id)
+    })    
     .then((idExists) =>{
         const testRE=RegExp(/^\W?[0-9]+$/)
         if (testRE.test(req.query.inc_votes)){
@@ -109,6 +123,7 @@ exports.getAllReviews = (req,res,next) => {
         res.status(200).send({reviews})
     })
     .catch((err)=>{
+        console.log(err)
         next(err)
     })
 }
@@ -125,7 +140,6 @@ exports.getAllReviewComments = (req,res,next) => {
         res.status(200).send({comments})
     })
     .catch((err) => {
-        console.log("CONTROLLER error",err)
         next(err)
     })
 }
@@ -135,7 +149,7 @@ exports.postComment = (req,res,next) => {
     const reviewId = req.params['id'];
     const{username,body}=req.query;
     
-    checkCommentPostParams(req.query)
+    queryValidation(req.query,['username','body'])
     .then(()=>{
         return postCommentModel(reviewId,username,body)
     })
@@ -143,7 +157,6 @@ exports.postComment = (req,res,next) => {
         res.status(200).send({comment})
     })
     .catch((err) => {
-        console.log("CONTROLLER error",err)
         next(err)
     })
 }
@@ -157,4 +170,32 @@ exports.deleteComment = (req,res,next) => {
         res.status(200).send({comment})
     })
 
+}
+
+exports.getUsers = (req,res) => {
+    return getUsersModel()
+    .then((users) => {
+        res.status(200).send({users})
+    })
+}
+
+exports.getUsername = (req,res) => {
+
+    const username = req.params.username;
+
+    return getUsernameModel(username)
+    .then((user) => {
+        res.status(200).send({user})
+    })
+}
+
+exports.patchComment = (req,res) => {
+
+    const votes = req.query.inc_votes;
+    const commentId = req.params.comment_id;
+
+    return patchCommentModel(commentId,votes)
+    .then((comment) => {
+        res.status(200).send({comment})
+    })
 }

@@ -42,15 +42,17 @@ exports.patchReviewById = (params, query) => {
   );
 };
 
-exports.getAllReviewsModel = (sort_by = "created_at", order_by = "DESC",category) => {
+exports.getAllReviewsModel = (sort_by = 'created_at', order_by = 'DESC',category) => {
   if (category !== undefined) {
 
     return db
-      .query(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY ${sort_by} ${order_by};`,[category])
+      .query(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2 $3;`,[category,sort_by,order_by])
       .then((res) => {
+        console.log('MODEL RES 1',res)
         return res.rows;
       })
       .catch((err)=>{
+        console.log('MODEL ERR 1',err)
         return Promise.reject(err)
       });
   } else {
@@ -61,6 +63,7 @@ exports.getAllReviewsModel = (sort_by = "created_at", order_by = "DESC",category
       return res.rows;
     })
     .catch((err)=>{
+      console.log('MODEL ERR 2',err)
       return Promise.reject(err)
     });
   }
@@ -98,3 +101,29 @@ exports.deleteCommentModel = (id) => {
     })
   
 }
+
+exports.getUsersModel = () => {
+  return db.query(`SELECT * FROM users;`).then((res) => {
+    return res.rows;
+  });
+};
+
+exports.getUsernameModel = (username) => {
+  return db.query(`SELECT * FROM users WHERE username='${username}';`,).then((res) => {
+    return res.rows;
+  });
+};
+
+exports.patchCommentModel = (commentId,votes) => {
+  return db.query(`SELECT * FROM comments where comment_id=$1;`,[commentId])
+  .then((res) => {
+    const oldVotes=res.rows[0].votes;
+    return oldVotes
+  })
+  .then((oldVotes)=>{
+    return db.query(`UPDATE comments SET votes=$2 WHERE comment_id=$1 RETURNING *;`,[commentId,votes+oldVotes])
+  })
+  .then((res) => {
+    return res.rows;
+  })
+};

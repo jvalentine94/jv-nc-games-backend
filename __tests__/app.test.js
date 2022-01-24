@@ -8,7 +8,7 @@ const app = require("../app");
 afterAll(() => db.end());
 beforeEach(() => seed(testData));
 
-describe("Testing Seed functionality for setting up tables", () => {
+describe.skip("Testing Seed functionality for setting up tables", () => {
   test("Categories", () => {
     return db.query(`SELECT * FROM categories`).then((res) => {
       expect((res.rows.length = 3));
@@ -65,7 +65,7 @@ describe("Testing Seed functionality for setting up tables", () => {
   });
 });
 
-describe("Testing Get Category", () => {
+describe.skip("Testing Get Category", () => {
   test("Get Category", () => {
     return request(app)
       .get("/api/categories")
@@ -83,14 +83,14 @@ describe("Testing Get Category", () => {
   });
 });
 
-describe("Testing Get Review By Id", () => {
+describe.skip("Testing Get Review By Id", () => {
   test("valid get ID", () => {
     return request(app)
       .get("/api/reviews/1")
       .expect(200)
       .then((res) => {
+        console.log(res.body.review)
         expect(res.body.review).toBeInstanceOf(Object);
-        //DATE TEST
 
         expect(res.body.review).toMatchObject({
           review_id: expect.any(Number),
@@ -123,7 +123,7 @@ describe("Testing Get Review By Id", () => {
   });
 });
 
-describe("Testing Patch By Id", () => {
+describe.skip("Testing Patch By Id", () => {
   test("Patch Review by Id, increase votes", () => {
     return request(app)
       .patch("/api/reviews/1?inc_votes=4")
@@ -179,10 +179,9 @@ describe("Testing Patch By Id", () => {
         expect(res.body.msg).toBe("Bad Request");
       });
   });
-  test("No vote change specified", () => {
+  test.only("No vote change specified", () => {
     return request(app)
       .patch("/api/reviews/1?inc_votes=")
-
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe("Bad Request");
@@ -199,8 +198,8 @@ describe("Testing Patch By Id", () => {
   });
 });
 
-//NEEDS SOME ERROR HANDLING WORK AFTER PAUL NCHELP
-describe.skip("Testing Get All Reviews", () => {
+//NEEDS SOME ERROR HANDLING WORK AFTER PAUL NCHELP, STRUGGLING 23/01 TO REFACTOR
+describe.only("Testing Get All Reviews", () => {
   test("Basic Functionality", () => {
     return request(app)
       .get("/api/reviews")
@@ -224,6 +223,7 @@ describe.skip("Testing Get All Reviews", () => {
       });
   });
   test("Basic Functionality with Query options", () => {
+    //CANT FIGURE THIS ONE OUT
     return request(app)
       .get("/api/reviews?category=dexterity")
       .expect(200)
@@ -280,7 +280,7 @@ describe.skip("Testing Get All Reviews", () => {
 });
 
 //ONLY ERROR HANDLED FOR NON-NUMERIAL ID REQUEST
-describe("Testing Get Review Comments by Id", () => {
+describe.skip("Testing Get Review Comments by Id", () => {
   test("Basic Functionality", () => {
     return request(app)
       .get("/api/reviews/2/comments")
@@ -310,8 +310,8 @@ describe("Testing Get Review Comments by Id", () => {
 });
 
 //ONLY ERROR HANDLED FOR AN IRRELEVANT QUERY PARAM
-describe("Testing Post Comment", () => {
-  test.only("Basic Functionality", () => {
+describe.skip("Testing Post Comment", () => {
+  test("Basic Functionality", () => {
     return request(app)
       .post("/api/reviews/1/comments?username=joe&body=newcomment")
       .expect(200)
@@ -325,7 +325,7 @@ describe("Testing Post Comment", () => {
         });
       });
   });
-  test.only('Error Handler, one of query params not allowed', () => {
+  test('Error Handler, one of query params not allowed', () => {
     return request(app)
       .post("/api/reviews/1/comments?username=joe&body=newcomment&created_at=wrong")
       .expect(400)
@@ -333,7 +333,7 @@ describe("Testing Post Comment", () => {
         expect(res.body.msg).toBe("Bad Request");
       });
     })
-    test.only('Error Handler, query param doesnt exist in database', () => {
+    test('Error Handler, query param doesnt exist in database', () => {
       return request(app)
         .post("/api/reviews/1/comments?username=joe&body=newcomment&nothing=wrong")
         .expect(400)
@@ -344,7 +344,7 @@ describe("Testing Post Comment", () => {
 });
 
 //NEEDS ERROR HANDLING
-describe("Testing Delete Comment", () => {
+describe.skip("Testing Delete Comment", () => {
   test("Basic Functionality", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -356,6 +356,60 @@ describe("Testing Delete Comment", () => {
           author: expect.any(String),
           review_id: expect.any(Number),
           created_at: expect.any(String)
+        });
+      });
+  });
+});
+
+describe.skip("Testing Get All Users", () => {
+  test("Get All Users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.users).toBeInstanceOf(Array);
+        expect(res.body.users).toHaveLength(4);
+        res.body.users.forEach((index) => {
+          expect(index).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String)
+          });
+        });
+      });
+  });
+});
+
+describe.skip("Testing Get User by username", () => {
+  test("Get User by Username", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.user[0]).toBeInstanceOf(Object);
+          expect(res.body.user[0]).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String)
+    
+        });
+      });
+  });
+});
+
+describe.skip("Testing patch comment", () => {
+  test("Patch comment and adjust vote count", () => {
+    return request(app)
+      .patch("/api/comments/1?inc_votes=5")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comment[0]).toBeInstanceOf(Object);
+          expect(res.body.comment[0]).toMatchObject({
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            review_id: expect.any(Number),
+            created_at: expect.any(String)
         });
       });
   });
