@@ -44,9 +44,10 @@ exports.patchReviewById = (params, query) => {
 
 exports.getAllReviewsModel = (sort_by = 'created_at', order_by = 'DESC',category) => {
   if (category !== undefined) {
+    console.log('CASE 1',category,order_by,sort_by)
 
     return db
-      .query(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2 $3;`,[category,sort_by,order_by])
+      .query(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2, $3;`,[category,sort_by,order_by])
       .then((res) => {
         console.log('MODEL RES 1',res)
         return res.rows;
@@ -56,7 +57,7 @@ exports.getAllReviewsModel = (sort_by = 'created_at', order_by = 'DESC',category
         return Promise.reject(err)
       });
   } else {
-
+    console.log('CASE 2')
     return db
     .query(`SELECT * FROM reviews ORDER BY ${sort_by} ${order_by};`)
     .then((res) => {

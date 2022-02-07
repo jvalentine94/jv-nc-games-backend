@@ -222,7 +222,7 @@ describe.only("Testing Get All Reviews", () => {
         });
       });
   });
-  test("Basic Functionality with Query options", () => {
+  test.only("Basic Functionality with Query options", () => {
     //CANT FIGURE THIS ONE OUT
     return request(app)
       .get("/api/reviews?category=dexterity")

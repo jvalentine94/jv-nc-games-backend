@@ -115,6 +115,8 @@ exports.getAllReviews = (req,res,next) => {
 
     const {sort_by,order_by,category} = req.query;
 
+    console.log(category)
+
     isCategory(category)
     .then(()=>{
         return getAllReviewsModel(sort_by,order_by,category)
