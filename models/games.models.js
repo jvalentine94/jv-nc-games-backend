@@ -1,5 +1,7 @@
 const db = require("../db/connection");
 
+const pgformat = require('pg-format');
+
 exports.getCategories = () => {
   return db.query(`SELECT * FROM categories;`).then((res) => {
     return res.rows;
@@ -46,8 +48,10 @@ exports.getAllReviewsModel = (sort_by = 'created_at', order_by = 'DESC',category
   if (category !== undefined) {
     console.log('CASE 1',category,order_by,sort_by)
 
+    // const sqlformat = pgformat(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug=${category} ORDER BY ${sort_by} ${order_by}`, sort_by, order_by, category)
+
     return db
-      .query(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2, $3;`,[category,sort_by,order_by])
+      .query(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug='${category}' ORDER BY ${sort_by} ${order_by};`)
       .then((res) => {
         console.log('MODEL RES 1',res)
         return res.rows;
