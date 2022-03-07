@@ -222,7 +222,7 @@ describe.only("Testing Get All Reviews", () => {
         });
       });
   });
-  test.only("Basic Functionality with Query options", () => {
+  test("Basic Functionality with Query options", () => {
     //CANT FIGURE THIS ONE OUT
     return request(app)
       .get("/api/reviews?category=dexterity")
@@ -275,6 +275,30 @@ describe.only("Testing Get All Reviews", () => {
       .expect(404)
       .then((res) => {
         expect(res.body.msg).toBe("Not Found");
+      });
+  });
+  //CUSTOM TEST FOR FRONTEND
+  test.only("Basic Functionality", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by='created_at'")
+      .expect(200)
+      .then((res) => {
+        console.log(res.body)
+        // expect(res.body.reviews).toBeInstanceOf(Array);
+        // expect(res.body.reviews).toHaveLength(13);
+        // res.body.reviews.forEach((index) => {
+        //   expect(index).toMatchObject({
+        //     review_id: expect.any(Number),
+        //     title: expect.any(String),
+        //     review_body: expect.any(String),
+        //     designer: expect.any(String),
+        //     review_img_url: expect.any(String),
+        //     votes: expect.any(Number),
+        //     category: expect.any(String),
+        //     owner: expect.any(String),
+        //     created_at: expect.any(String),
+        //   });
+        // });
       });
   });
 });

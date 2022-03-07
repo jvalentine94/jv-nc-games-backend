@@ -46,9 +46,7 @@ exports.patchReviewById = (params, query) => {
 
 exports.getAllReviewsModel = (sort_by = 'created_at', order_by = 'DESC',category) => {
   if (category !== undefined) {
-    console.log('CASE 1',category,order_by,sort_by)
-
-    // const sqlformat = pgformat(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug=${category} ORDER BY ${sort_by} ${order_by}`, sort_by, order_by, category)
+    // console.log('CASE 1',category,order_by,sort_by)
 
     return db
       .query(`SELECT * FROM reviews JOIN categories ON category=slug WHERE slug='${category}' ORDER BY ${sort_by} ${order_by};`)
