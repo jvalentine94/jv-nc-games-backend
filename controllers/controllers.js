@@ -26,7 +26,8 @@ const { reqParamIsNumber } = require("../db/utils/util-funcs");
 
 const { checkCommentPostParams } = require("../db/utils/util-funcs");
 
-//REFACTORED, DISCUSS LIMITATION/IMPORVEMENTS WITH TUTOR
+const { checkUserExists } = require("../db/utils/util-funcs");
+
 exports.getReviewId = (req, res, next) => {
   const { id } = req.params;
 
@@ -47,7 +48,6 @@ exports.getReviewId = (req, res, next) => {
     });
 };
 
-//REFACTOR THIS, DISCUSS REFACTOR WITH TUTOR
 exports.patchReviewId = (req, res, next) => {
   const id = req.params.id;
   const votes = req.body.inc_votes;
@@ -155,18 +155,30 @@ exports.getAllReviewComments = (req, res, next) => {
 
 exports.postComment = (req, res, next) => {
   const reviewId = req.params["id"];
-  const { username, body } = req.query;
+  const { username, body } = req.body;
 
-  queryValidation(req.query, ["username", "body"])
-    .then(() => {
-      return postCommentModel(reviewId, username, body);
-    })
-    .then((comment) => {
-      res.status(200).send({ comment });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  if (queryValidation(req.body, ["username", "body"])) {
+    checkReviewId(reviewId)
+      .then((idExists) => {
+        if (idExists === false) {
+          return Promise.reject({ status: 400, msg: "Bad Request" });
+        }
+      })
+      .then(() => {
+        return checkUserExists(username);
+      })
+      .then(() => {
+        return postCommentModel(reviewId, username, body);
+      })
+      .then((comment) => {
+        res.status(200).send({ comment });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
+    throw { status: 400, msg: "Bad Request" };
+  }
 };
 
 exports.deleteComment = (req, res, next) => {

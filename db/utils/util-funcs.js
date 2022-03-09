@@ -1,5 +1,6 @@
 const { routes } = require("../../app");
 const db = require("../../db/connection");
+const { getUsernameModel } = require("../../models/games.models");
 
 exports.checkReviewId = (id) => {
   return db
@@ -84,14 +85,16 @@ exports.queryValidation = (req, arr) => {
 
   for (let i = 0; i < reqKeys.length; i++) {
     if (!arr.includes(reqKeys[i])) {
-      console.log(req, "ERROR, PARAM INCORRECT");
       output = false;
     }
   }
+  return output;
+};
 
-  if (output == false) {
-    return Promise.reject({ status: 400, msg: "Bad Request" });
-  } else {
-    return Promise.resolve();
-  }
+exports.checkUserExists = (username) => {
+  return getUsernameModel(username).then((username) => {
+    if (username.length === 0) {
+      return Promise.reject({ status: 400, msg: "Bad Request" });
+    }
+  });
 };

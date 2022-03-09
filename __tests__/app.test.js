@@ -353,13 +353,13 @@ describe("Tests for Comment Endpoints", () => {
     test("Post Comment by Review ID, inserts a comment to Review table when queried with correct parameters", () => {
       return request(app)
         .post("/api/reviews/1/comments")
-        .send({ username: "X", body: "X" })
+        .send({ username: "mallionaire", body: "Body test" })
         .expect(200)
         .then((res) => {
           expect(res.body.comment[0]).toMatchObject({
-            body: expect.any(String),
+            body: "Body test",
             votes: expect.any(Number),
-            author: expect.any(String),
+            author: "mallionaire",
             review_id: expect.any(Number),
             created_at: expect.any(String),
           });
@@ -378,6 +378,42 @@ describe("Tests for Comment Endpoints", () => {
       return request(app)
         .post("/api/reviews/1/comments")
         .send({ username: "X", body: "X", errorKey: "error" })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+    test("Post Comment by Review ID, throws an error when queried with invalid review ID", () => {
+      return request(app)
+        .post("/api/reviews/notanID/comments")
+        .send({ username: "X", body: "X" })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+    test("Post Comment by Review ID, throws an error when queried with invalid query keys", () => {
+      return request(app)
+        .post("/api/reviews/844/comments")
+        .send({ username: "X", body: "X" })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+    test("Post Comment by Review ID, throws an error when posted with non-existent user", () => {
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .send({ username: "X", body: "X" })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+    test("Post Comment by Review ID, throws an error when posted with missing required keys", () => {
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .send({ username: "mallionaire" })
         .expect(400)
         .then((res) => {
           expect(res.body.msg).toBe("Bad Request");
