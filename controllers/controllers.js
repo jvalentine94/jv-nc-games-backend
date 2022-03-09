@@ -128,16 +128,29 @@ exports.getUsername = (req, res) => {
 exports.getAllReviewComments = (req, res, next) => {
   const { id } = req.params;
 
-  reqParamIsNumber(id)
-    .then(() => {
-      return getAllReviewCommentsModel(id);
-    })
-    .then((comments) => {
-      res.status(200).send({ comments });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  if (checkReviewId(id) === false) {
+    console.log("ID DONT EXIST");
+    throw { status: 404, msg: "Not Found" };
+  } else if (reqParamIsNumber(id) === false) {
+    console.log("ID AINT NUMBER");
+    throw { status: 400, msg: "Bad Request" };
+  } else {
+    getReviewById(id)
+      .then((review) => {
+        if (review === undefined) {
+          return Promise.reject({ status: 404, msg: "Not Found" });
+        }
+      })
+      .then(() => {
+        return getAllReviewCommentsModel(id);
+      })
+      .then((comments) => {
+        res.status(200).send({ comments });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 };
 
 exports.postComment = (req, res, next) => {

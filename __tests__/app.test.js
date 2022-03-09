@@ -248,7 +248,6 @@ describe("Tests for Review Endpoints", () => {
         });
     });
     test("Get Reviews, returns an array of all relevant reviews when queried", () => {
-      //CANT FIGURE THIS ONE OUT
       return request(app)
         .get("/api/reviews?category=dexterity")
         .expect(200)
@@ -305,8 +304,7 @@ describe("Tests for Review Endpoints", () => {
 });
 
 describe("Tests for Comment Endpoints", () => {
-  //ONLY ERROR HANDLED FOR NON-NUMERIAL ID REQUEST
-  describe("Tests for Get Comments by Id", () => {
+  describe("Tests for Get Comments by Review ID", () => {
     test("Get Comments by Review ID, returns a an array of comments when queried with a valid Review ID", () => {
       return request(app)
         .get("/api/reviews/2/comments")
@@ -333,12 +331,29 @@ describe("Tests for Comment Endpoints", () => {
           expect(res.body.msg).toBe("Bad Request");
         });
     });
+    test("Get Comments by Review ID, throws an error when given a non existent Review ID", () => {
+      return request(app)
+        .get("/api/reviews/777/comments")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe("Not Found");
+        });
+    });
+    test("Get Comments by Review ID, returns an empty array if Review ID is valid but has no comments", () => {
+      return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments).toBeInstanceOf(Array);
+          expect(res.body.comments).toHaveLength(0);
+        });
+    });
   });
-  //ONLY ERROR HANDLED FOR AN IRRELEVANT QUERY PARAM
-  describe("Tests for Post Comment", () => {
+  describe.only("Tests for Post Comment", () => {
     test("Post Comment by Review ID, inserts a comment to Review table when queried with correct parameters", () => {
       return request(app)
-        .post("/api/reviews/1/comments?username=joe&body=newcomment")
+        .post("/api/reviews/1/comments")
+        .send({ username: "X", body: "X" })
         .expect(200)
         .then((res) => {
           expect(res.body.comment[0]).toMatchObject({
@@ -352,9 +367,8 @@ describe("Tests for Comment Endpoints", () => {
     });
     test("Post Comment by Review ID, throws an error when queried with invalid parameters", () => {
       return request(app)
-        .post(
-          "/api/reviews/1/comments?username=joe&body=newcomment&created_at=wrong"
-        )
+        .post("/api/reviews/1/comments")
+        .send({ username: "X", body: "X", created_at: "error" })
         .expect(400)
         .then((res) => {
           expect(res.body.msg).toBe("Bad Request");
@@ -362,9 +376,8 @@ describe("Tests for Comment Endpoints", () => {
     });
     test("Post Comment by Review ID, throws an error when queried with invalid query keys", () => {
       return request(app)
-        .post(
-          "/api/reviews/1/comments?username=joe&body=newcomment&nothing=wrong"
-        )
+        .post("/api/reviews/1/comments")
+        .send({ username: "X", body: "X", errorKey: "error" })
         .expect(400)
         .then((res) => {
           expect(res.body.msg).toBe("Bad Request");

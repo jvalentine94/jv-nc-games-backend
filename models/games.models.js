@@ -79,9 +79,6 @@ exports.getAllReviewCommentsModel = (id) => {
     .query(`SELECT * FROM comments WHERE review_id=$1;`, [id])
     .then((res) => {
       return res.rows;
-    })
-    .catch((err) => {
-      Promise.reject(err);
     });
 };
 
