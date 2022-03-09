@@ -41,30 +41,35 @@ exports.getAllReviewsModel = (
   order_by = "DESC",
   category
 ) => {
-  if (category !== undefined) {
+  if (category !== undefined && order_by === "DESC") {
     return db
       .query(
-        `SELECT (review_id, title, designer, review_img_url,votes,category,owner,created_at) FROM reviews JOIN categories ON category=slug WHERE slug='${category}' ORDER BY ${sort_by} ${order_by};`
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2 DESC;`,
+        [category, sort_by]
       )
       .then((res) => {
         console.log("MODEL RES", res);
         return res.rows;
-      })
-      .catch((err) => {
-        return Promise.reject(err);
+      });
+  } else if (category !== undefined && order_by === "ASC") {
+    return db
+      .query(
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2 ASC;`,
+        [category, sort_by]
+      )
+      .then((res) => {
+        console.log("MODEL RES", res);
+        return res.rows;
       });
   } else {
     return db
       .query(
-        `SELECT (review_id, title, designer, review_img_url,votes,category,owner,created_at) FROM reviews ORDER BY ${sort_by} ${order_by};`
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY ${sort_by} ${order_by};`
       )
       .then((res) => {
         console.log("MODEL RES", res);
 
         return res.rows;
-      })
-      .catch((err) => {
-        return Promise.reject(err);
       });
   }
 };

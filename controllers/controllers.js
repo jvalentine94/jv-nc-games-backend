@@ -54,9 +54,11 @@ exports.patchReviewId = (req, res, next) => {
 
   queryValidation(req.body, ["inc_votes"])
     .then(() => {
+      console.log("NO ERR");
       return checkReviewId(id);
     })
     .then((idExists) => {
+      console.log(" ERR");
       const testRE = RegExp(/^\W?[0-9]+$/);
       if (testRE.test(votes)) {
         if (idExists === true) {
@@ -69,10 +71,17 @@ exports.patchReviewId = (req, res, next) => {
           return Promise.reject({ status: 400, msg: "Bad Request" });
         }
       } else {
-        return Promise.reject({ status: 400, msg: "Bad Request" });
+        if (typeof votes === "string") {
+          return Promise.reject({ status: 400, msg: "Bad Request" });
+        } else {
+          return patchReviewById(id, 0).then((review) => {
+            res.status(200).send({ review });
+          });
+        }
       }
     })
     .catch((err) => {
+      console.log("BIG ERR");
       next(err);
     });
 };
@@ -85,8 +94,11 @@ exports.getAllReviews = (req, res, next) => {
       return getAllReviewsModel(sort_by, order_by, category);
     })
     .then((reviews) => {
-      console.log("REVIEWS", reviews);
-      res.status(200).send({ reviews });
+      if (reviews.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      } else {
+        res.status(200).send({ reviews });
+      }
     })
     .catch((err) => {
       next(err);

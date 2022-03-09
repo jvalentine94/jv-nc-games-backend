@@ -202,11 +202,29 @@ describe("Tests for Review Endpoints", () => {
           expect(res.body.msg).toBe("Bad Request");
         });
     });
+    test("Patch Review by ID, throws no error when missing inc_votes key in body", () => {
+      return request(app)
+        .patch("/api/reviews/1")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.review).toBeInstanceOf(Object);
+          expect(res.body.review).toMatchObject({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            review_body: expect.any(String),
+            designer: expect.any(String),
+            review_img_url: expect.any(String),
+            votes: 1,
+            category: expect.any(String),
+            owner: expect.any(String),
+            created_at: expect.any(String),
+          });
+        });
+    });
   });
 
-  //NEEDS SOME ERROR HANDLING WORK AFTER PAUL NCHELP, STRUGGLING 23/01 TO REFACTOR
-  describe.only("Tests for Get Reviews", () => {
-    test.only("Get Reviews, returns an array of all reviews when no queries are provided", () => {
+  describe("Tests for Get Reviews", () => {
+    test("Get Reviews, returns an array of all reviews when no queries are provided", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -241,11 +259,10 @@ describe("Tests for Review Endpoints", () => {
             expect(index).toMatchObject({
               review_id: expect.any(Number),
               title: expect.any(String),
-              review_body: expect.any(String),
               designer: expect.any(String),
               review_img_url: expect.any(String),
               votes: expect.any(Number),
-              category: expect.any(String),
+              category: "dexterity",
               owner: expect.any(String),
               created_at: expect.any(String),
             });
@@ -276,7 +293,7 @@ describe("Tests for Review Endpoints", () => {
           expect(res.body.msg).toBe("Not Found");
         });
     });
-    test("Get Reviews, throws an error when category queried with a valid category but has noa ssociated reviews", () => {
+    test("Get Reviews, throws an error when category queried with a valid category but has no associated reviews", () => {
       return request(app)
         .get("/api/reviews?category=children's games")
         .expect(404)
