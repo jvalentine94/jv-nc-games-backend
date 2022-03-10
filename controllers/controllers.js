@@ -18,6 +18,8 @@ const { getUsernameModel } = require("../models/games.models.js");
 
 const { patchCommentModel } = require("../models/games.models.js");
 
+const { getEndpointsModel } = require("../models/games.models.js");
+
 const { checkReviewId, queryValidation } = require("../db/utils/util-funcs");
 
 const { isCategory } = require("../db/utils/util-funcs");
@@ -29,6 +31,12 @@ const { checkCommentPostParams } = require("../db/utils/util-funcs");
 const { checkUserExists } = require("../db/utils/util-funcs");
 
 const { checkCommentId } = require("../db/utils/util-funcs");
+
+exports.getEndpoints = (req, res, next) => {
+  getEndpointsModel().then((endpoints) => {
+    res.status(200).send({ endpoints: endpoints });
+  });
+};
 
 exports.getReviewId = (req, res, next) => {
   const { id } = req.params;

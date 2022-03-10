@@ -509,3 +509,16 @@ describe("Tests for User Endpoints", () => {
     });
   });
 });
+
+describe.only("Test for API Endpoint", () => {
+  describe("Main Test", () => {
+    test("Get All Users, returns a an array of Users", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((res) => {
+          console.log(res);
+        });
+    });
+  });
+});

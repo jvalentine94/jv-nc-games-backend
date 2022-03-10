@@ -6,6 +6,8 @@ app.use(cors());
 
 app.use(express.json());
 
+const { getEndpoints } = require("./controllers/controllers.js");
+
 const { getCategory } = require("./controllers/controllers.js");
 
 const { getReviewId } = require("./controllers/controllers.js");
@@ -27,6 +29,7 @@ const { getUsername } = require("./controllers/controllers.js");
 const { patchComment } = require("./controllers/controllers.js");
 
 //DATA CONTROLLERS
+app.get("/api", getEndpoints);
 
 app.get("/api/categories", getCategory);
 

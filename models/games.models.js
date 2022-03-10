@@ -1,6 +1,14 @@
 const db = require("../db/connection");
 
+const fs = require("fs/promises");
+
 const pgformat = require("pg-format");
+
+exports.getEndpointsModel = () => {
+  return fs.readFile(`endpoints.json`, "utf8").then((endpoints) => {
+    return endpoints;
+  });
+};
 
 exports.getCategories = () => {
   return db.query(`SELECT * FROM categories;`).then((res) => {
