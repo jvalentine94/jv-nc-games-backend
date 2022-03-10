@@ -3,6 +3,11 @@ const db = require("../../db/connection");
 const { getUsernameModel } = require("../../models/games.models");
 
 exports.checkReviewId = (id) => {
+  testRE = RegExp(/^\W?[0-9]+$/);
+  if (testRE.test(id) === false) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
   return db
     .query(` SELECT * FROM reviews WHERE review_id=${id};`)
     .then(({ rows }) => {
@@ -109,7 +114,4 @@ exports.checkCommentId = (id) => {
         return false;
       }
     });
-  // .catch(() => {
-  //   return false;
-  // });
 };

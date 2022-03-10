@@ -62,36 +62,25 @@ exports.patchReviewId = (req, res, next) => {
   const id = req.params.id;
   const votes = req.body.inc_votes;
 
-  queryValidation(req.body, ["inc_votes"])
-    .then(() => {
-      console.log("NO ERR");
-      return checkReviewId(id);
-    })
+  checkReviewId(id)
     .then((idExists) => {
-      console.log(" ERR");
       const testRE = RegExp(/^\W?[0-9]+$/);
-      if (testRE.test(votes)) {
-        if (idExists === true) {
-          return patchReviewById(id, votes).then((review) => {
-            res.status(200).send({ review });
-          });
-        } else if (idExists === false) {
-          return Promise.reject({ status: 404, msg: "Not Found" });
-        } else if (idExists === undefined) {
-          return Promise.reject({ status: 400, msg: "Bad Request" });
-        }
-      } else {
-        if (typeof votes === "string") {
-          return Promise.reject({ status: 400, msg: "Bad Request" });
-        } else {
-          return patchReviewById(id, 0).then((review) => {
-            res.status(200).send({ review });
-          });
-        }
+      console;
+      if (queryValidation(req.body, ["inc_votes"]) === false) {
+        return Promise.reject({ status: 400, msg: "Bad Request" });
+      } else if (idExists === false) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      } else if (testRE.test(votes) === false) {
+        return Promise.reject({ status: 400, msg: "Bad Request" });
       }
     })
+    .then(() => {
+      return patchReviewById(id, votes);
+    })
+    .then((review) => {
+      res.status(200).send({ review });
+    })
     .catch((err) => {
-      console.log("BIG ERR");
       next(err);
     });
 };
@@ -137,30 +126,31 @@ exports.getUsername = (req, res) => {
 
 exports.getAllReviewComments = (req, res, next) => {
   const { id } = req.params;
-
-  if (checkReviewId(id) === false) {
-    console.log("ID DONT EXIST");
-    throw { status: 404, msg: "Not Found" };
-  } else if (reqParamIsNumber(id) === false) {
-    console.log("ID AINT NUMBER");
-    throw { status: 400, msg: "Bad Request" };
-  } else {
-    getReviewById(id)
-      .then((review) => {
-        if (review === undefined) {
-          return Promise.reject({ status: 404, msg: "Not Found" });
+  // WORKING ON THIS BIT
+  return getReviewById(id)
+    .then((review) => {
+      if (reqParamIsNumber(id) === false) {
+        return Promise.reject({ status: 400, msg: "Bad Request" });
+      } else if (review === undefined) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+    })
+    .then(() => {
+      return checkReviewId(id).then((idCheck) => {
+        if (idCheck == false) {
+          return Promise.reject({ status: 400, msg: "Bad Request" });
         }
-      })
-      .then(() => {
-        return getAllReviewCommentsModel(id);
-      })
-      .then((comments) => {
-        res.status(200).send({ comments });
-      })
-      .catch((err) => {
-        next(err);
       });
-  }
+    })
+    .then(() => {
+      return getAllReviewCommentsModel(id);
+    })
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.postComment = (req, res, next) => {
@@ -196,7 +186,6 @@ exports.deleteComment = (req, res, next) => {
 
   checkCommentId(commentId)
     .then((commentExists) => {
-      console.log(commentExists);
       if (commentExists === false) {
         return Promise.reject({ status: 404, msg: "Not Found" });
       }
@@ -205,11 +194,9 @@ exports.deleteComment = (req, res, next) => {
       return deleteCommentModel(commentId);
     })
     .then((oldComment) => {
-      console.log(oldComment);
       res.status(200).send({ oldComment: oldComment });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };

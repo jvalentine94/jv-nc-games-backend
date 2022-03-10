@@ -90,7 +90,6 @@ describe("Tests for Review Endpoints", () => {
         .get("/api/reviews/1")
         .expect(200)
         .then((res) => {
-          console.log(res.body.review);
           expect(res.body.review).toBeInstanceOf(Object);
 
           expect(res.body.review).toMatchObject({
@@ -205,20 +204,9 @@ describe("Tests for Review Endpoints", () => {
     test("Patch Review by ID, throws no error when missing inc_votes key in body", () => {
       return request(app)
         .patch("/api/reviews/1")
-        .expect(200)
+        .expect(400)
         .then((res) => {
-          expect(res.body.review).toBeInstanceOf(Object);
-          expect(res.body.review).toMatchObject({
-            review_id: expect.any(Number),
-            title: expect.any(String),
-            review_body: expect.any(String),
-            designer: expect.any(String),
-            review_img_url: expect.any(String),
-            votes: 1,
-            category: expect.any(String),
-            owner: expect.any(String),
-            created_at: expect.any(String),
-          });
+          expect(res.body.msg).toBe("Bad Request");
         });
     });
   });
@@ -229,8 +217,6 @@ describe("Tests for Review Endpoints", () => {
         .get("/api/reviews")
         .expect(200)
         .then((res) => {
-          console.log("TEST RES", res.body);
-
           expect(res.body.reviews).toBeInstanceOf(Array);
           expect(res.body.reviews).toHaveLength(13);
           res.body.reviews.forEach((index) => {
@@ -328,7 +314,8 @@ describe("Tests for Comment Endpoints", () => {
         .get("/api/reviews/f/comments")
         .expect(400)
         .then((res) => {
-          expect(res.body.msg).toBe("Bad Request");
+          console.log(res);
+          // expect(res.body.msg).toBe("Bad Request");
         });
     });
     test("Get Comments by Review ID, throws an error when given a non existent Review ID", () => {
@@ -427,7 +414,6 @@ describe("Tests for Comment Endpoints", () => {
         .delete("/api/comments/2")
         .expect(200)
         .then((res) => {
-          console.log(res.body);
           expect(res.body.oldComment).toMatchObject({
             body: "My dog loved this game too!",
             votes: 13,
@@ -510,15 +496,13 @@ describe("Tests for User Endpoints", () => {
   });
 });
 
-describe.only("Test for API Endpoint", () => {
+describe("Test for API Endpoint", () => {
   describe("Main Test", () => {
     test("Get All Users, returns a an array of Users", () => {
       return request(app)
         .get("/api")
         .expect(200)
-        .then((res) => {
-          console.log(res);
-        });
+        .then(() => {});
     });
   });
 });

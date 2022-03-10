@@ -56,7 +56,6 @@ exports.getAllReviewsModel = (
         [category, sort_by]
       )
       .then((res) => {
-        console.log("MODEL RES", res);
         return res.rows;
       });
   } else if (category !== undefined && order_by === "ASC") {
@@ -66,7 +65,6 @@ exports.getAllReviewsModel = (
         [category, sort_by]
       )
       .then((res) => {
-        console.log("MODEL RES", res);
         return res.rows;
       });
   } else {
@@ -75,8 +73,6 @@ exports.getAllReviewsModel = (
         `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY ${sort_by} ${order_by};`
       )
       .then((res) => {
-        console.log("MODEL RES", res);
-
         return res.rows;
       });
   }
