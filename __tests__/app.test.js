@@ -349,7 +349,7 @@ describe("Tests for Comment Endpoints", () => {
         });
     });
   });
-  describe.only("Tests for Post Comment", () => {
+  describe("Tests for Post Comment", () => {
     test("Post Comment by Review ID, inserts a comment to Review table when queried with correct parameters", () => {
       return request(app)
         .post("/api/reviews/1/comments")
@@ -421,20 +421,36 @@ describe("Tests for Comment Endpoints", () => {
     });
   });
 
-  //NEEDS ERROR HANDLING
   describe("Tests for Delete Comment", () => {
-    test("Delete Comment by Review ID, returns delted comment", () => {
+    test("Delete Comment by Review ID, returns deleted comment", () => {
       return request(app)
-        .delete("/api/comments/1")
+        .delete("/api/comments/2")
         .expect(200)
         .then((res) => {
-          expect(res.body.comment[0]).toMatchObject({
-            body: expect.any(String),
-            votes: expect.any(Number),
-            author: expect.any(String),
-            review_id: expect.any(Number),
+          console.log(res.body);
+          expect(res.body.oldComment).toMatchObject({
+            body: "My dog loved this game too!",
+            votes: 13,
+            author: "mallionaire",
+            review_id: 3,
             created_at: expect.any(String),
           });
+        });
+    });
+    test("Delete Comment by Review ID, throws an error for non existent ID", () => {
+      return request(app)
+        .delete("/api/comments/459")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toEqual("Not Found");
+        });
+    });
+    test("Delete Comment by Review ID, throws an error for non valid ID ie string", () => {
+      return request(app)
+        .delete("/api/comments/notanid")
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual("Bad Request");
         });
     });
   });

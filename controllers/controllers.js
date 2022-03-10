@@ -28,6 +28,8 @@ const { checkCommentPostParams } = require("../db/utils/util-funcs");
 
 const { checkUserExists } = require("../db/utils/util-funcs");
 
+const { checkCommentId } = require("../db/utils/util-funcs");
+
 exports.getReviewId = (req, res, next) => {
   const { id } = req.params;
 
@@ -184,9 +186,24 @@ exports.postComment = (req, res, next) => {
 exports.deleteComment = (req, res, next) => {
   const commentId = req.params["commentid"];
 
-  deleteCommentModel(commentId).then((comment) => {
-    res.status(200).send({ comment });
-  });
+  checkCommentId(commentId)
+    .then((commentExists) => {
+      console.log(commentExists);
+      if (commentExists === false) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+    })
+    .then(() => {
+      return deleteCommentModel(commentId);
+    })
+    .then((oldComment) => {
+      console.log(oldComment);
+      res.status(200).send({ oldComment: oldComment });
+    })
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
 };
 
 exports.patchComment = (req, res) => {
