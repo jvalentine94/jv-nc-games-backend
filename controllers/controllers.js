@@ -34,7 +34,7 @@ const { checkCommentId } = require("../db/utils/util-funcs");
 
 exports.getEndpoints = (req, res, next) => {
   getEndpointsModel().then((endpoints) => {
-    res.status(200).send({ endpoints: endpoints });
+    res.status(200).send(endpoints);
   });
 };
 
