@@ -90,6 +90,26 @@ exports.getAllReviews = (req, res, next) => {
 
   isCategory(category)
     .then(() => {
+      if (order_by !== undefined && order_by !== "ASC" && order_by !== "DESC") {
+        return Promise.reject({ status: 400, msg: "Bad Request" });
+      }
+    })
+    .then(() => {
+      const validSortBys = [
+        "title",
+        "review_body",
+        "designer",
+        "review_img_url",
+        "votes",
+        "category",
+        "owner",
+        "created_at",
+      ];
+      if (sort_by !== undefined && validSortBys.indexOf(sort_by) == -1) {
+        return Promise.reject({ status: 400, msg: "Bad Request" });
+      }
+    })
+    .then(() => {
       return getAllReviewsModel(sort_by, order_by, category);
     })
     .then((reviews) => {
@@ -126,7 +146,6 @@ exports.getUsername = (req, res) => {
 
 exports.getAllReviewComments = (req, res, next) => {
   const { id } = req.params;
-  // WORKING ON THIS BIT
   return getReviewById(id)
     .then((review) => {
       if (reqParamIsNumber(id) === false) {

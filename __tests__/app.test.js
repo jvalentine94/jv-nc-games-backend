@@ -314,8 +314,7 @@ describe("Tests for Comment Endpoints", () => {
         .get("/api/reviews/f/comments")
         .expect(400)
         .then((res) => {
-          console.log(res);
-          // expect(res.body.msg).toBe("Bad Request");
+          expect(res.body.msg).toBe("Bad Request");
         });
     });
     test("Get Comments by Review ID, throws an error when given a non existent Review ID", () => {

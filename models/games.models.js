@@ -18,16 +18,15 @@ exports.getCategories = () => {
 
 exports.getReviewById = (id) => {
   return db
-    .query(`SELECT * FROM reviews WHERE review_id=${id};`)
+    .query(`SELECT * FROM reviews WHERE review_id=$1;`, [id])
     .then((res) => {
       return res.rows[0];
-    })
-    .catch((err) => {});
+    });
 };
 
 exports.patchReviewById = (id, votes) => {
   return db
-    .query(`SELECT review_id, votes FROM reviews WHERE review_id=${id};`)
+    .query(`SELECT review_id, votes FROM reviews WHERE review_id=$1;`, [id])
     .then((res) => {
       return res.rows[0]["votes"];
     })
@@ -35,13 +34,13 @@ exports.patchReviewById = (id, votes) => {
       const updatedVotes = currentVotes + votes;
       return db
         .query(
-          `UPDATE reviews SET votes=${updatedVotes} WHERE review_id=${id} RETURNING *;`
+          `UPDATE reviews SET votes=${updatedVotes} WHERE review_id=$1 RETURNING *;`,
+          [id]
         )
         .then((resp) => {
           return resp.rows[0];
         });
-    })
-    .catch((err) => {});
+    });
 };
 
 exports.getAllReviewsModel = (
@@ -70,7 +69,8 @@ exports.getAllReviewsModel = (
   } else {
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY ${sort_by} ${order_by};`
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY $1 DESC;`,
+        [sort_by]
       )
       .then((res) => {
         return res.rows;
