@@ -221,7 +221,7 @@ exports.deleteComment = (req, res, next) => {
 };
 
 exports.patchComment = (req, res) => {
-  const votes = req.query.inc_votes;
+  const votes = req.body.inc_votes;
   const commentId = req.params.comment_id;
 
   return patchCommentModel(commentId, votes).then((comment) => {

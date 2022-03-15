@@ -439,18 +439,19 @@ describe("Tests for Comment Endpoints", () => {
         });
     });
   });
-  describe("Tests for Patch comment", () => {
+  describe.only("Tests for Patch comment", () => {
     test("Patch Comment by ID, increase votes when given a number", () => {
       return request(app)
-        .patch("/api/comments/1?inc_votes=5")
+        .patch("/api/comments/1")
+        .send({ inc_votes: 5 })
         .expect(200)
         .then((res) => {
           expect(res.body.comment[0]).toBeInstanceOf(Object);
           expect(res.body.comment[0]).toMatchObject({
-            body: expect.any(String),
-            votes: expect.any(Number),
-            author: expect.any(String),
-            review_id: expect.any(Number),
+            body: "I loved this game too!",
+            votes: 21,
+            author: "bainesface",
+            review_id: 2,
             created_at: expect.any(String),
           });
         });
