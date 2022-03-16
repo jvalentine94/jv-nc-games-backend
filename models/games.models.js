@@ -95,6 +95,7 @@ exports.postCommentModel = (id, username, body) => {
       [body, 0, username, id, createdAt]
     )
     .then((res) => {
+      console.log("POST COMMENT", res);
       return res.rows;
     });
 };
