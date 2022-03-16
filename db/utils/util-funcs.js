@@ -49,11 +49,8 @@ exports.reqParamIsNumber = (reqParam) => {
   const testRE = RegExp(/^\W?[0-9]+$/);
 
   if (testRE.test(reqParam)) {
-    console.log("IS NUM");
     return true;
   } else {
-    console.log("ISNT NUM");
-
     return false;
   }
 };
@@ -67,7 +64,6 @@ exports.checkCommentPostParams = (reqParams) => {
 
   for (let i = 0; i < reqKeys.length; i++) {
     if (!arr.includes(reqKeys[i])) {
-      console.log(reqParams, "ERROR INITIATED AT UTILS");
       output = false;
     }
   }
