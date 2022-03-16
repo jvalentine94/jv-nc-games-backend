@@ -176,6 +176,8 @@ exports.postComment = (req, res, next) => {
   const reviewId = req.params["id"];
   const { username, body } = req.body;
 
+  console.log(username, body, reviewId);
+
   if (queryValidation(req.body, ["username", "body"])) {
     checkReviewId(reviewId)
       .then((idExists) => {

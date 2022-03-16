@@ -335,7 +335,7 @@ describe("Tests for Comment Endpoints", () => {
         });
     });
   });
-  describe("Tests for Post Comment", () => {
+  describe.only("Tests for Post Comment", () => {
     test("Post Comment by Review ID, inserts a comment to Review table when queried with correct parameters", () => {
       return request(app)
         .post("/api/reviews/1/comments")
@@ -439,7 +439,7 @@ describe("Tests for Comment Endpoints", () => {
         });
     });
   });
-  describe.only("Tests for Patch comment", () => {
+  describe("Tests for Patch comment", () => {
     test("Patch Comment by ID, increase votes when given a number", () => {
       return request(app)
         .patch("/api/comments/1")
