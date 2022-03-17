@@ -176,6 +176,8 @@ exports.postComment = (req, res, next) => {
   const reviewId = req.params["id"];
   const { username, body } = req.body;
 
+  console.log(req);
+
   console.log(req.body);
 
   console.log(username, body, reviewId);
