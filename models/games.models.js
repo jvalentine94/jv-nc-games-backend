@@ -51,8 +51,8 @@ exports.getAllReviewsModel = (
   if (category !== undefined && order_by === "DESC") {
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2 DESC;`,
-        [category, sort_by]
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY ${sort_by} DESC;`,
+        [category]
       )
       .then((res) => {
         return res.rows;
@@ -60,8 +60,8 @@ exports.getAllReviewsModel = (
   } else if (category !== undefined && order_by === "ASC") {
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY $2 ASC;`,
-        [category, sort_by]
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY ${sort_by} ASC;`,
+        [category]
       )
       .then((res) => {
         return res.rows;

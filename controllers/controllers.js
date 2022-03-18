@@ -88,6 +88,8 @@ exports.patchReviewId = (req, res, next) => {
 exports.getAllReviews = (req, res, next) => {
   const { sort_by, order_by, category } = req.query;
 
+  console.log(sort_by, order_by, category, "HERE");
+
   isCategory(category)
     .then(() => {
       if (order_by !== undefined && order_by !== "ASC" && order_by !== "DESC") {

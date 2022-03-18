@@ -254,6 +254,27 @@ describe("Tests for Review Endpoints", () => {
           });
         });
     });
+    test.only("Get Reviews, returns an array of all relevant reviews when queried with a sortby", () => {
+      return request(app)
+        .get("/api/reviews?category=social deduction&sort_by=votes")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.reviews).toBeInstanceOf(Array);
+          expect(res.body.reviews).toHaveLength(11);
+          res.body.reviews.forEach((index) => {
+            expect(index).toMatchObject({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              designer: expect.any(String),
+              review_img_url: expect.any(String),
+              votes: expect.any(Number),
+              category: "social deduction",
+              owner: expect.any(String),
+              created_at: expect.any(String),
+            });
+          });
+        });
+    });
     test("Get Reviews, throws an array when sort queried with an invalid value", () => {
       return request(app)
         .get("/api/reviews?sort_by=nothing")
@@ -335,7 +356,7 @@ describe("Tests for Comment Endpoints", () => {
         });
     });
   });
-  describe.only("Tests for Post Comment", () => {
+  describe("Tests for Post Comment", () => {
     test("Post Comment by Review ID, inserts a comment to Review table when queried with correct parameters", () => {
       return request(app)
         .post("/api/reviews/1/comments")
