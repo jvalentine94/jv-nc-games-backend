@@ -49,6 +49,7 @@ exports.getAllReviewsModel = (
   category
 ) => {
   if (category !== undefined && order_by === "DESC") {
+    console.log("CASE 1");
     return db
       .query(
         `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY ${sort_by} DESC;`,
@@ -58,6 +59,8 @@ exports.getAllReviewsModel = (
         return res.rows;
       });
   } else if (category !== undefined && order_by === "ASC") {
+    console.log("CASE 2");
+
     return db
       .query(
         `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY ${sort_by} ASC;`,
@@ -66,15 +69,28 @@ exports.getAllReviewsModel = (
       .then((res) => {
         return res.rows;
       });
-  } else {
+  } else if (category == undefined && order_by === "ASC") {
+    console.log("CASE 3");
+
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY $1 DESC;`,
-        [sort_by]
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY ${sort_by} ASC;`
       )
       .then((res) => {
         return res.rows;
       });
+  } else if (category == undefined && order_by === "DESC") {
+    console.log("CASE 4");
+
+    return db
+      .query(
+        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY ${sort_by} DESC;`
+      )
+      .then((res) => {
+        return res.rows;
+      });
+  } else {
+    console.log("CASE ERROR");
   }
 };
 
