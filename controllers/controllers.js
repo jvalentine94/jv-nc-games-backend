@@ -1,36 +1,26 @@
-const { getCategories } = require("../models/games.models.js");
+const {
+  getCategories,
+  getReviewById,
+  patchReviewById,
+  getAllReviewsModel,
+  getAllReviewCommentsModel,
+  postCommentModel,
+  deleteCommentModel,
+  getUsersModel,
+  getUsernameModel,
+  patchCommentModel,
+  getEndpointsModel,
+} = require("../models/games.models.js");
 
-const { getReviewById } = require("../models/games.models.js");
-
-const { patchReviewById } = require("../models/games.models.js");
-
-const { getAllReviewsModel } = require("../models/games.models.js");
-
-const { getAllReviewCommentsModel } = require("../models/games.models.js");
-
-const { postCommentModel } = require("../models/games.models.js");
-
-const { deleteCommentModel } = require("../models/games.models.js");
-
-const { getUsersModel } = require("../models/games.models.js");
-
-const { getUsernameModel } = require("../models/games.models.js");
-
-const { patchCommentModel } = require("../models/games.models.js");
-
-const { getEndpointsModel } = require("../models/games.models.js");
-
-const { checkReviewId, queryValidation } = require("../db/utils/util-funcs");
-
-const { isCategory } = require("../db/utils/util-funcs");
-
-const { reqParamIsNumber } = require("../db/utils/util-funcs");
-
-const { checkCommentPostParams } = require("../db/utils/util-funcs");
-
-const { checkUserExists } = require("../db/utils/util-funcs");
-
-const { checkCommentId } = require("../db/utils/util-funcs");
+const {
+  checkReviewId,
+  queryValidation,
+  isCategory,
+  reqParamIsNumber,
+  checkCommentPostParams,
+  checkUserExists,
+  checkCommentId,
+} = require("../db/utils/util-funcs");
 
 exports.getEndpoints = (req, res, next) => {
   getEndpointsModel().then((endpoints) => {
@@ -65,7 +55,6 @@ exports.patchReviewId = (req, res, next) => {
   checkReviewId(id)
     .then((idExists) => {
       const testRE = RegExp(/^\W?[0-9]+$/);
-      console;
       if (queryValidation(req.body, ["inc_votes"]) === false) {
         return Promise.reject({ status: 400, msg: "Bad Request" });
       } else if (idExists === false) {
@@ -87,8 +76,6 @@ exports.patchReviewId = (req, res, next) => {
 
 exports.getAllReviews = (req, res, next) => {
   const { sort_by, order_by, category } = req.query;
-
-  console.log(sort_by, order_by, category, "HERE");
 
   isCategory(category)
     .then(() => {
@@ -138,12 +125,21 @@ exports.getUsers = (req, res) => {
   });
 };
 
-exports.getUsername = (req, res) => {
+exports.getUsername = (req, res, next) => {
   const username = req.params.username;
 
-  return getUsernameModel(username).then((user) => {
-    res.status(200).send({ user });
-  });
+  return getUsernameModel(username)
+    .then((user) => {
+      console.log(user);
+      if (user.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      } else {
+        res.status(200).send({ user });
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getAllReviewComments = (req, res, next) => {
@@ -177,12 +173,6 @@ exports.getAllReviewComments = (req, res, next) => {
 exports.postComment = (req, res, next) => {
   const reviewId = req.params["id"];
   const { username, body } = req.body;
-
-  console.log(req);
-
-  console.log(req.body);
-
-  console.log(username, body, reviewId);
 
   if (queryValidation(req.body, ["username", "body"])) {
     checkReviewId(reviewId)
@@ -228,11 +218,30 @@ exports.deleteComment = (req, res, next) => {
     });
 };
 
-exports.patchComment = (req, res) => {
+exports.patchComment = (req, res, next) => {
   const votes = req.body.inc_votes;
   const commentId = req.params.comment_id;
 
-  return patchCommentModel(commentId, votes).then((comment) => {
-    res.status(200).send({ comment });
-  });
+  const numberRegEx = RegExp(/^\W?[0-9]+$/);
+
+  if (numberRegEx.test(votes) === false) {
+    throw { status: 400, msg: "Invalid votes" };
+  } else if (numberRegEx.test(commentId) === false) {
+    throw { status: 400, msg: "Invalid ID" };
+  } else {
+    checkCommentId(commentId)
+      .then((idExists) => {
+        if (idExists === false) {
+          return Promise.reject({ status: 404, msg: "Not Found" });
+        }
+      })
+      .then(() => {
+        return patchCommentModel(commentId, votes).then((comment) => {
+          res.status(200).send({ comment });
+        });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 };

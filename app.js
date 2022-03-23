@@ -62,8 +62,6 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  console.log("ERROR HANDLER", err);
-
   if (err.code == "42703") {
     res.status(400).send({ msg: "Bad Request" });
   }

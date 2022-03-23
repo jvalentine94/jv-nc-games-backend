@@ -238,7 +238,6 @@ describe("Tests for Review Endpoints", () => {
         .get("/api/reviews?sort_by=votes&order_by=ASC")
         .expect(200)
         .then((res) => {
-          console.log(res.body);
           expect(res.body.reviews).toBeInstanceOf(Array);
           expect(res.body.reviews).toHaveLength(13);
           res.body.reviews.forEach((index) => {
@@ -260,7 +259,6 @@ describe("Tests for Review Endpoints", () => {
         .get("/api/reviews?sort_by=votes&order_by=DESC")
         .expect(200)
         .then((res) => {
-          console.log(res.body);
           expect(res.body.reviews).toBeInstanceOf(Array);
           expect(res.body.reviews).toHaveLength(13);
           res.body.reviews.forEach((index) => {
@@ -303,7 +301,6 @@ describe("Tests for Review Endpoints", () => {
         .get("/api/reviews?category=social deduction&sort_by=votes")
         .expect(200)
         .then((res) => {
-          console.log(res.body);
           expect(res.body.reviews).toBeInstanceOf(Array);
           expect(res.body.reviews).toHaveLength(11);
           res.body.reviews.forEach((index) => {
@@ -327,7 +324,6 @@ describe("Tests for Review Endpoints", () => {
         )
         .expect(200)
         .then((res) => {
-          console.log(res.body);
           expect(res.body.reviews).toBeInstanceOf(Array);
           expect(res.body.reviews).toHaveLength(11);
           res.body.reviews.forEach((index) => {
@@ -530,7 +526,7 @@ describe("Tests for Comment Endpoints", () => {
     });
   });
   describe("Tests for Patch comment", () => {
-    test("Patch Comment by ID, increase votes when given a number", () => {
+    test("Patch Comment by ID, increase votes when given a positive number", () => {
       return request(app)
         .patch("/api/comments/1")
         .send({ inc_votes: 5 })
@@ -546,12 +542,63 @@ describe("Tests for Comment Endpoints", () => {
           });
         });
     });
+    test("Patch Comment by ID, increase votes when given a negative number", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: -5 })
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comment[0]).toBeInstanceOf(Object);
+          expect(res.body.comment[0]).toMatchObject({
+            body: "I loved this game too!",
+            votes: 11,
+            author: "bainesface",
+            review_id: 2,
+            created_at: expect.any(String),
+          });
+        });
+    });
+    test("Patch Comment by ID, throws error when ID isn't a number", () => {
+      return request(app)
+        .patch("/api/comments/notanid")
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Invalid ID");
+        });
+    });
+    test("Patch Comment by ID, throws error when votes isn't a number", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: "a" })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Invalid votes");
+        });
+    });
+    test("Patch Comment by ID, throws error when ID doesn't exist", () => {
+      return request(app)
+        .patch("/api/comments/999")
+        .send({ inc_votes: 5 })
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe("Not Found");
+        });
+    });
+    test("Patch Comment by ID, no error when inc_votes is not sent", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Invalid votes");
+        });
+    });
   });
 });
 
 describe("Tests for User Endpoints", () => {
   describe("Testing Get All Users", () => {
-    test("Get All Users, returns a an array of Users", () => {
+    test("Get All Users, returns an array of Users", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
@@ -577,10 +624,19 @@ describe("Tests for User Endpoints", () => {
         .then((res) => {
           expect(res.body.user[0]).toBeInstanceOf(Object);
           expect(res.body.user[0]).toMatchObject({
-            username: expect.any(String),
-            name: expect.any(String),
-            avatar_url: expect.any(String),
+            username: "mallionaire",
+            name: "haz",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
           });
+        });
+    });
+    test("Get Users, returns a an error when given a non existent user", () => {
+      return request(app)
+        .get("/api/users/notauser")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe("Not Found");
         });
     });
   });
