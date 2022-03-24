@@ -18,9 +18,17 @@ exports.getCategories = () => {
 
 exports.getReviewById = (id) => {
   return db
-    .query(`SELECT * FROM reviews WHERE review_id=$1;`, [id])
-    .then((res) => {
-      return res.rows[0];
+    .query(
+      `SELECT reviews.*, COUNT (comments.comment_id) AS comment_count FROM reviews
+      LEFT JOIN comments
+      ON comments.review_id=reviews.review_id 
+      WHERE reviews.review_id=$1
+      GROUP BY reviews.review_id;`,
+      [id]
+    )
+
+    .then((review) => {
+      return review.rows[0];
     });
 };
 

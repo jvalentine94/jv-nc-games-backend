@@ -6,27 +6,25 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cors());
 
-const { getEndpoints } = require("./controllers/controllers.js");
+const {
+  getEndpoints,
+  getCategory,
+  getReviewId,
+  patchReviewId,
+  getAllReviews,
+  getAllReviewComments,
+  postComment,
+  deleteComment,
+  getUsers,
+  getUsername,
+  patchComment,
+} = require("./controllers/controllers.js");
 
-const { getCategory } = require("./controllers/controllers.js");
-
-const { getReviewId } = require("./controllers/controllers.js");
-
-const { patchReviewId } = require("./controllers/controllers.js");
-
-const { getAllReviews } = require("./controllers/controllers.js");
-
-const { getAllReviewComments } = require("./controllers/controllers.js");
-
-const { postComment } = require("./controllers/controllers.js");
-
-const { deleteComment } = require("./controllers/controllers.js");
-
-const { getUsers } = require("./controllers/controllers.js");
-
-const { getUsername } = require("./controllers/controllers.js");
-
-const { patchComment } = require("./controllers/controllers.js");
+const {
+  handlesStandardErrors,
+  handlesCustomErrors,
+  handlesUnspecifiedErrors,
+} = require("./controllers/error.controllers.js");
 
 //DATA CONTROLLERS
 app.get("/api", getEndpoints);
@@ -53,33 +51,10 @@ app.patch("/api/comments/:comment_id", patchComment);
 
 //ERROR HANDLERS
 
-app.use((err, req, res, next) => {
-  if (err.status) {
-    res.status(err.status).send({ msg: err.msg });
-  } else {
-    next(err);
-  }
-});
+app.use(handlesStandardErrors);
 
-app.use((err, req, res, next) => {
-  if (err.code == "42703") {
-    res.status(400).send({ msg: "Bad Request" });
-  }
-  if (err.code == "42601") {
-    res.status(400).send({ msg: "Bad Request" });
-  }
-  if (err.code == "22P02") {
-    res.status(400).send({ msg: "Bad Request" });
-  }
-  if (err.code == "23502") {
-    res.status(400).send({ msg: "Bad Request" });
-  } else {
-    next(err);
-  }
-});
+app.use(handlesCustomErrors);
 
-app.all((err, req, res, next) => {
-  res.status(500).send({ msg: "Server Error" });
-});
+app.all(handlesUnspecifiedErrors);
 
 module.exports = app;
