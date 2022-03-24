@@ -218,7 +218,6 @@ describe("Tests for Review Endpoints", () => {
         .get("/api/reviews")
         .expect(200)
         .then((res) => {
-          console.log(res.body.reviews);
           expect(res.body.reviews).toBeInstanceOf(Array);
           expect(res.body.reviews).toHaveLength(13);
           res.body.reviews.forEach((index) => {
