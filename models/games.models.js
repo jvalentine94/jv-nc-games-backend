@@ -72,7 +72,7 @@ exports.getAllReviewsModel = (
   } else if (category !== undefined && order_by === "ASC") {
     return db
       .query(
-        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at FROM reviews
+        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at, COUNT(comment_id) AS comment_count FROM reviews
         LEFT JOIN comments
         ON comments.review_id=reviews.review_id 
         WHERE category=$1
@@ -86,7 +86,7 @@ exports.getAllReviewsModel = (
   } else if (category == undefined && order_by === "ASC") {
     return db
       .query(
-        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at FROM reviews
+        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at, COUNT(comment_id) AS comment_count FROM reviews
         LEFT JOIN comments
         ON comments.review_id=reviews.review_id
         GROUP BY reviews.review_id
@@ -98,7 +98,7 @@ exports.getAllReviewsModel = (
   } else if (category == undefined && order_by === "DESC") {
     return db
       .query(
-        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at FROM reviews
+        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at, COUNT(comment_id) AS comment_count FROM reviews
         LEFT JOIN comments
         ON comments.review_id=reviews.review_id 
         GROUP BY reviews.review_id

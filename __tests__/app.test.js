@@ -218,6 +218,7 @@ describe("Tests for Review Endpoints", () => {
         .get("/api/reviews")
         .expect(200)
         .then((res) => {
+          console.log(res.body.reviews);
           expect(res.body.reviews).toBeInstanceOf(Array);
           expect(res.body.reviews).toHaveLength(13);
           res.body.reviews.forEach((index) => {
@@ -230,6 +231,7 @@ describe("Tests for Review Endpoints", () => {
               category: expect.any(String),
               owner: expect.any(String),
               created_at: expect.any(String),
+              comment_count: expect.any(String),
             });
           });
         });
@@ -251,6 +253,7 @@ describe("Tests for Review Endpoints", () => {
               category: expect.any(String),
               owner: expect.any(String),
               created_at: expect.any(String),
+              comment_count: expect.any(String),
             });
           });
         });
@@ -272,6 +275,7 @@ describe("Tests for Review Endpoints", () => {
               category: expect.any(String),
               owner: expect.any(String),
               created_at: expect.any(String),
+              comment_count: expect.any(String),
             });
           });
         });
@@ -293,6 +297,7 @@ describe("Tests for Review Endpoints", () => {
               category: "dexterity",
               owner: expect.any(String),
               created_at: expect.any(String),
+              comment_count: expect.any(String),
             });
           });
         });
@@ -314,6 +319,7 @@ describe("Tests for Review Endpoints", () => {
               category: "social deduction",
               owner: expect.any(String),
               created_at: expect.any(String),
+              comment_count: expect.any(String),
             });
           });
         });
@@ -337,6 +343,7 @@ describe("Tests for Review Endpoints", () => {
               category: "social deduction",
               owner: expect.any(String),
               created_at: expect.any(String),
+              comment_count: expect.any(String),
             });
           });
         });
