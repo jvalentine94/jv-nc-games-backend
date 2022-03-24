@@ -84,13 +84,12 @@ describe("Test for Category Endpoint", () => {
 });
 
 describe("Tests for Review Endpoints", () => {
-  describe.only("Tests for Get Review by ID", () => {
+  describe("Tests for Get Review by ID", () => {
     test("Get Review by ID returns a review when queried with a valid ID", () => {
       return request(app)
         .get("/api/reviews/3")
         .expect(200)
         .then((res) => {
-          console.log(res.body.review);
           expect(res.body.review).toBeInstanceOf(Object);
 
           expect(res.body.review).toMatchObject({

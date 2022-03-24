@@ -26,7 +26,6 @@ exports.getReviewById = (id) => {
       GROUP BY reviews.review_id;`,
       [id]
     )
-
     .then((review) => {
       return review.rows[0];
     });
@@ -59,7 +58,12 @@ exports.getAllReviewsModel = (
   if (category !== undefined && order_by === "DESC") {
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY ${sort_by} DESC;`,
+        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at, COUNT(comment_id) AS comment_count FROM reviews
+        LEFT JOIN comments
+        ON comments.review_id=reviews.review_id 
+        WHERE category=$1
+        GROUP BY reviews.review_id
+        ORDER BY ${sort_by} DESC;`,
         [category]
       )
       .then((res) => {
@@ -68,7 +72,12 @@ exports.getAllReviewsModel = (
   } else if (category !== undefined && order_by === "ASC") {
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews JOIN categories ON category=slug WHERE slug=$1 ORDER BY ${sort_by} ASC;`,
+        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at FROM reviews
+        LEFT JOIN comments
+        ON comments.review_id=reviews.review_id 
+        WHERE category=$1
+        GROUP BY reviews.review_id
+        ORDER BY ${sort_by} ASC;`,
         [category]
       )
       .then((res) => {
@@ -77,7 +86,11 @@ exports.getAllReviewsModel = (
   } else if (category == undefined && order_by === "ASC") {
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY ${sort_by} ASC;`
+        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at FROM reviews
+        LEFT JOIN comments
+        ON comments.review_id=reviews.review_id
+        GROUP BY reviews.review_id
+        ORDER BY ${sort_by} ASC;`
       )
       .then((res) => {
         return res.rows;
@@ -85,7 +98,11 @@ exports.getAllReviewsModel = (
   } else if (category == undefined && order_by === "DESC") {
     return db
       .query(
-        `SELECT review_id, title, designer, review_img_url,votes,category,owner,created_at FROM reviews ORDER BY ${sort_by} DESC;`
+        `SELECT reviews.review_id, reviews.title, reviews.designer, reviews.review_img_url,reviews.votes,reviews.category,reviews.owner,reviews.created_at FROM reviews
+        LEFT JOIN comments
+        ON comments.review_id=reviews.review_id 
+        GROUP BY reviews.review_id
+        ORDER BY ${sort_by} DESC;`
       )
       .then((res) => {
         return res.rows;
